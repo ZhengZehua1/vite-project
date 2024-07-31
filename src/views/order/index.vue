@@ -9,9 +9,9 @@
         <el-form-item label="起止日期">
             <el-date-picker
                 v-model="formInline.date"
-                value-format="YYYY-MM-DD"
-                format="YYYY-MM-DD"
-                type="daterange"
+				value-format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD HH:mm:ss"
+                type="datetimerange"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
             />

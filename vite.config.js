@@ -11,7 +11,7 @@ const viteConfig = defineConfig(()=>{
       proxy: { 
         '/api': { 
           target: env.VITE_API_URL, 
-          rewrite: (path) => path.replace(/^\/api/, ''),
+          rewrite: (path) => path.replace(/^\/api/, '/api'),
           changeOrigin: true 
         } 
       }

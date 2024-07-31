@@ -1,24 +1,27 @@
 <!-- 送货 -->
 <template>
+<div style="background-color: #e3efd9;padding: 10px;">
+	<el-page-header @back="router.go(-1)" title="返回" content="未同步送货表"></el-page-header>
+</div>
 <div style="padding: 20px">
     <!-- 表单 -->
     <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="起止日期">
             <el-date-picker
                 v-model="formInline.date"
-                value-format="YYYY-MM-DD"
-                format="YYYY-MM-DD"
-                type="daterange"
+                value-format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD HH:mm:ss"
+                type="datetimerange"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
             />
       	</el-form-item>
       	<el-form-item label="供应商名称">
-        	<el-input v-model="formInline.user" placeholder="供应商名称" clearable />
+        	<el-input v-model="formInline.supplyName" placeholder="供应商名称" clearable />
       	</el-form-item>
       	<el-form-item label="供应商代码">
 			<el-select
-				v-model="formInline.region"
+				v-model="formInline.supplyCode"
 				placeholder="供应商代码"
 				clearable
 			>
@@ -77,14 +80,19 @@
 </template>
   
 <script setup>
-	import { ref } from 'vue'
+	import { ref , onMounted} from 'vue'
+	import { useRoute ,useRouter} from 'vue-router';
+	const route = useRoute()
+	const router = useRouter()
 	/* 引入API */
-
-
+	import {getDeliveryTable} from '@/api/home'
+	import { onResetValue } from '@/utils/common'
+	/* 获取路由参数 */
+	const { id } = route.params
 	/* 表单数据 */
 	const formInline = ref({
-		user: '',
-		region: '',
+		supplyCode: '',
+		supplyName: '',
 		date: [],
 	})
 	/* 查询按钮 */
@@ -93,7 +101,10 @@
 	}
 	/* 重置按钮 */
 	const onReset = () => {
-		console.log('reset!')
+		// 数据初始化
+		const newData = onResetValue()
+		formInline.value = newData.formInline
+		page.value = newData.page
 	}
 
 	/* 表格数据 */
@@ -116,6 +127,19 @@
 	const handleCurrentChange = ()=>{
 
 	}
+
+	/* 组件挂载 */
+	const onOrderTable =async()=>{
+		let res = await getDeliveryTable({
+			supplyCode:id,
+			page:page.value.currentPage,
+			pageSize:page.value.pageSize
+		})
+		console.log(res,'未同步订单表格')
+	}
+	onMounted(()=>{
+		// onOrderTable()
+	})
 </script>
   
 <style>

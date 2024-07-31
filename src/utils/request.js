@@ -2,7 +2,7 @@
 import axios from 'axios'
 // 创建axios 实例
 const request = axios.create({
-  baseURL:import.meta.env.VITE_API_BASE === 'development' ? '/api' : import.meta.env.VITE_API_URL, 
+  baseURL:import.meta.env.VITE_API_BASE === 'development' ? '/api' : (import.meta.env.VITE_API_URL + '/api'), 
   timeout: 50000 // 超时时间
 })
 

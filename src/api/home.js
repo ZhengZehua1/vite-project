@@ -27,3 +27,21 @@ export const getOrderTable = (data)=>{
         params: data
     })
 }
+/* 获取未同步送货列表 */
+export const getDeliveryTable = (data)=>{
+    return request({
+        // url: '/reportControlle/getDeliveryRecord',
+        method: 'POST',
+        /* 查询参数 */
+        params: data
+    })
+}
+/* 获取未排产列表 */
+export const getProductionTable = (data)=>{
+    return request({
+        // url: '/reportControlle/getDeliveryRecord',
+        method: 'POST',
+        /* 查询参数 */
+        params: data
+    })
+}
