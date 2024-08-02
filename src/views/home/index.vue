@@ -46,6 +46,7 @@
     </el-form>
 
     <!-- 表格 -->	
+	<p style='color: #666; font-size: 12px;'>默认只加载当天数据</p>
     <el-table v-loading="loadingValue" selection :data="tableData" style="width: 100%;margin-bottom: 10px;" border >
         <el-table-column  label="汇总" fixed>
 			<el-table-column type="selection" width="40" />
@@ -118,7 +119,7 @@
 		@size-change="handleSizeChange"
 		@current-change="handleSizeChange"
     />
-
+	<p style='color: #666; font-size: 12px;'>默认只加载当天数据</p>
 	<el-table v-loading="loadingValue2" selection :data="tableData2" style="width: 100%;margin-bottom: 10px;" border>
 		<el-table-column  label="汇总" fixed>
 			<el-table-column type="selection" width="40" />
@@ -170,18 +171,20 @@
 <script setup name="Home">
 	import { onMounted, ref } from 'vue'
 	import {HomeFilled} from "@element-plus/icons-vue"
-	/* 引入路由 */
-	import { useRouter } from 'vue-router'
-	const router = useRouter()
 	/* 引入API */
 	import { getTableApi,getTableApiB} from '@/api/home'
 	/* 引入公共方法 */
-	import { onResetValue } from '@/utils/common'
+	import { onResetValue,todayA } from '@/utils/common'
 	import { ElMessage } from 'element-plus';
+	/* 引入路由 */
+	import { useRouter } from 'vue-router'
+	const router = useRouter()
 	/* 表单数据 */  /* ---------------------------------------- */
 	const formInline = ref({
 		supplyCode: '',
 		supplyName: '',
+		/* 时间默认是今天 00:00:00 到 今天 23:59:59 */
+
 		date: [],
 	})
 	/* 查询按钮 */
@@ -195,6 +198,9 @@
 		formInline.value = newData.formInline
 		page.value = newData.page
 		page2.value = newData.page
+		/* 获取今天  */
+		const time = todayA()
+		formInline.value.date = time
 		/* 重新加载数据 */
 		onGetTableData()
 	}
@@ -330,11 +336,19 @@
 		return getTableApiB(bodyValue2)
 	}
 	onMounted(async() => {
+		/* 获取今天  */
+		const time = todayA()
+		formInline.value.date = time
 		// 获取表格数据
 		onGetTableData()
 	})
 </script>
   
+<script>
+	export default {
+		name:'Home'
+	}
+</script>
 <style scoped>
 	.demo-form-inline .el-input {
 		--el-input-width: 220px;

@@ -44,24 +44,11 @@
 				</template>
         </el-table-column>
 
-        <el-table-column label="供应商代码">
-           
-        </el-table-column>
-
-        <el-table-column  label="供应商名称">
-            
-        </el-table-column>
-
-        <el-table-column  label="采购订单号">
-           
-        </el-table-column>
-
-        <el-table-column  label="未同步送货单号">
-           
-        </el-table-column>
-        <el-table-column  label="未同步确认时间">
-           
-        </el-table-column>
+        <el-table-column label="供应商代码" /> 
+        <el-table-column  label="供应商名称" />
+        <el-table-column  label="采购订单号" />
+        <el-table-column  label="未同步送货单号" />
+        <el-table-column  label="未同步确认时间" />
     </el-table>
 
     <!-- 分页 -->
