@@ -16,7 +16,7 @@
                 end-placeholder="结束日期"
             />
       	</el-form-item>
-      	<el-form-item label="供应商名称">
+      	<!-- <el-form-item label="供应商名称">
         	<el-input v-model="formInline.supplyName" placeholder="供应商名称" clearable />
       	</el-form-item>
       	<el-form-item label="供应商代码">
@@ -28,7 +28,7 @@
 				<el-option label="Zone one" value="shanghai" />
 				<el-option label="Zone two" value="beijing" />
         	</el-select>
-      	</el-form-item>
+      	</el-form-item> -->
       
       	<el-form-item>
 			<el-button type="primary" @click="onSubmit">查询</el-button>
@@ -37,26 +37,26 @@
     </el-form>
 
     <!-- 表格 -->
-    <el-table :data="tableData" style="width: 100%;margin-bottom: 10px;" border >
+    <el-table v-loading="loadingValue" :data="tableData" style="width: 100%;margin-bottom: 10px;" border >
         <el-table-column type="index" label="序号" width="60">
 				<template #default="scope">
 					{{ scope.$index + 1 + ((page.currentPage -1) * page.pageSize) }}
 				</template>
         </el-table-column>
 
-        <el-table-column label="供应商代码">
+        <el-table-column label="供应商代码" prop="supply_code">
            
         </el-table-column>
 
-        <el-table-column  label="供应商名称">
+        <el-table-column  label="供应商名称" prop="supply_name">
             
         </el-table-column>
 
-        <el-table-column  label="未同步采购订单号">
+        <el-table-column  label="未同步采购订单号" prop="po_no">
            
         </el-table-column>
 
-        <el-table-column  label="订单确认时间">
+        <el-table-column  label="订单确认时间" prop="reply_date">
            
         </el-table-column>
     </el-table>
@@ -78,15 +78,19 @@
   
 <script setup>
 	import { ref ,onMounted} from 'vue'
-	import { useRoute ,useRouter} from 'vue-router';
-	const route = useRoute()
-	const router = useRouter()
 	/* 引入接口 */
 	import {getOrderTable} from '@/api/home'
 	/* 引入公共方法 */
-	import { onResetValue } from '@/utils/common'
+	import { onResetValue,todayA } from '@/utils/common'
+
+	import { ElMessage } from 'element-plus';
+
 	/* 获取路由参数 */
+	import { useRoute ,useRouter} from 'vue-router';
+	const route = useRoute()
+	const router = useRouter()
 	const { id } = route.params
+	const objRow = route.query
 	
 	/* 表单数据 */  /* ------------ */
 	const formInline = ref({
@@ -97,16 +101,20 @@
 	/* 查询按钮 */
 	const onSubmit = () => {
 		console.log('submit!')
+		onOrderTable()
 	}
 	/* 重置按钮 */
 	const onReset = () => {
 		// 数据初始化
 		const newData = onResetValue()
-		formInline.value = newData.formInline
+		formInline.value.date = [objRow.startDate,objRow.endDate]
 		page.value = newData.page
+		/* 重新获取数据 */
+		onOrderTable()
 	}
 
 	/* 表格数据 */
+	const loadingValue = ref(false)
 	const tableData = ref([])
 	
 
@@ -121,26 +129,50 @@
 	})
 	/* 当前页数和当前展示条数改变时触发 */
 	const handleSizeChange = ()=>{
-
+		onOrderTable()
 	}
 	const handleCurrentChange = ()=>{
-
+		onOrderTable()
 	}
 
 	/* 组件挂载 */
-	const onOrderTable =async()=>{
-		let res = await getOrderTable({
-			supplyCode:id,
-			page:page.value.currentPage,
+	async function onOrderTable(){
+		loadingValue.value = true
+		let dataValue = {
+			supplyCode:objRow.supplyCode,
+			startDate:formInline.value.date[0],
+			endDate:formInline.value.date[1],
+			supplyName:objRow.supplyName,
+			current:page.value.currentPage,
 			pageSize:page.value.pageSize
-		})
-		console.log(res,'未同步订单表格')
+		}
+		try {
+			let res = await getOrderTable(dataValue)
+			console.log(res,'未同步订单表格')
+			res.records &&  res.records.length === 0 && ElMessage.warning('暂无数据！')
+			tableData.value = res.records
+			page.value.total = res.total
+			loadingValue.value = false
+		} catch (error) {
+			ElMessage.error('出错了，请稍后再试！')
+			loadingValue.value = false
+		}
 	}
 	onMounted(()=>{
-		// onOrderTable()
+		/* 获取今天  */
+		console.log(objRow);
+		// const time = todayA()
+		formInline.value.date = [objRow.startDate,objRow.endDate]
+		onOrderTable()
 	})
 </script>
   
+<script>
+	export default {
+		name:'Order'
+	}
+</script>
+
 <style>
 	.demo-form-inline .el-input {
 		--el-input-width: 220px;

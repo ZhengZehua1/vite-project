@@ -5,7 +5,7 @@ export const getTableApi = (data)=>{
         url: '/reportControlle/getPurchaseRecord',
         method: 'POST',
         /* 查询参数 */
-        params: data
+        data: data
     })
 }
 // /reportControlle/getDeliveryRecord 
@@ -14,6 +14,17 @@ export const getTableApiB = (data)=>{
         url: '/reportControlle/getDeliveryRecord',
         method: 'POST',
         /* 查询参数 */
+        data: data
+    })
+}
+
+// /api/reportControlle/getSupplyList
+/* 获取名称 */
+export const getSupplyListApi = (data)=>{
+    return request({
+        url: '/reportControlle/getSupplyList',
+        method: 'get',
+        /* 查询参数 */
         params: data
     })
 }
@@ -21,27 +32,27 @@ export const getTableApiB = (data)=>{
 /* 获取未同步订单列表 */
 export const getOrderTable = (data)=>{
     return request({
-        // url: '/reportControlle/getDeliveryRecord',
+        url: '/reportControlle/getUnsyncRecord',
         method: 'POST',
         /* 查询参数 */
-        params: data
+        data: data
     })
 }
 /* 获取未同步送货列表 */
 export const getDeliveryTable = (data)=>{
     return request({
-        // url: '/reportControlle/getDeliveryRecord',
+        url: '/reportControlle/getUnsyncDelivery',
         method: 'POST',
         /* 查询参数 */
-        params: data
+        data: data
     })
 }
 /* 获取未排产列表 */
 export const getProductionTable = (data)=>{
     return request({
-        // url: '/reportControlle/getDeliveryRecord',
+        url: '/reportControlle/getShedulingRecord',
         method: 'POST',
         /* 查询参数 */
-        params: data
+        data: data
     })
 }

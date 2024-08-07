@@ -16,28 +16,23 @@
             />
       	</el-form-item>
 		<el-form-item label="供应商名称">
-			<!-- <el-select
-				v-model="formInline.supplyName"
+			<el-select
+				v-model="formInline.supplyCodeList"
 				placeholder="供应商名称"
 				clearable
 				multiple
 				filterable
 				remote
+				v-loading="loadingSelect"
+				:remote-method="remoteMethod"
 			>
-				<el-option label="Zone one" value="shanghai" />
-				<el-option label="Zone two" value="beijing" />
-				<el-option label="Zone one1" value="shanghai3" />
-				<el-option label="Zone two1" value="beijing3" />
-				<el-option label="Zone one2" value="shanghai3" />
-				<el-option label="Zone two3" value="beijing4" />
-				<el-option label="Zone one4" value="shanghai4" />
-				<el-option label="Zone two4" value="beijing5" />
-			</el-select> -->
-			<el-input v-model="formInline.supplyName" placeholder="供应商名称" clearable />
+				<el-option v-for="(i,index) in supplyLIst" :key="i.supply_code" :label="i.supply_name" :value="i.supply_code" />
+			</el-select>
+			<!-- <el-input v-model="formInline.supplyName" placeholder="供应商名称" clearable /> -->
 		</el-form-item>
-      	<el-form-item label="供应商代码">
+      	<!-- <el-form-item label="供应商代码">
         	<el-input v-model="formInline.supplyCode" placeholder="供应商代码" clearable />
-      	</el-form-item>
+      	</el-form-item> -->
       
       	<el-form-item>
 			<el-button type="primary" @click="onSubmit">查询</el-button>
@@ -47,7 +42,7 @@
 
     <!-- 表格 -->	
 	<p style='color: #666; font-size: 12px;'>默认只加载当天数据</p>
-    <el-table v-loading="loadingValue" selection :data="tableData" style="width: 100%;margin-bottom: 10px;" border >
+    <el-table max-height="600px" v-loading="loadingValue" selection :data="tableData" style="width: 100%;margin-bottom: 10px;" border >
         <el-table-column  label="汇总" fixed>
 			<el-table-column type="selection" width="40" />
             <el-table-column type="index" label="序号" min-width="60">
@@ -120,7 +115,7 @@
 		@current-change="handleSizeChange"
     />
 	<p style='color: #666; font-size: 12px;'>默认只加载当天数据</p>
-	<el-table v-loading="loadingValue2" selection :data="tableData2" style="width: 100%;margin-bottom: 10px;" border>
+	<el-table max-height="600px" v-loading="loadingValue2" selection :data="tableData2" style="width: 100%;margin-bottom: 10px;" border>
 		<el-table-column  label="汇总" fixed>
 			<el-table-column type="selection" width="40" />
             <el-table-column type="index" label="序号" min-width="60">
@@ -172,7 +167,7 @@
 	import { onMounted, ref } from 'vue'
 	import {HomeFilled} from "@element-plus/icons-vue"
 	/* 引入API */
-	import { getTableApi,getTableApiB} from '@/api/home'
+	import { getTableApi,getTableApiB,getSupplyListApi} from '@/api/home'
 	/* 引入公共方法 */
 	import { onResetValue,todayA } from '@/utils/common'
 	import { ElMessage } from 'element-plus';
@@ -184,18 +179,38 @@
 		supplyCode: '',
 		supplyName: '',
 		/* 时间默认是今天 00:00:00 到 今天 23:59:59 */
-
+		supplyCodeList:[],
 		date: [],
 	})
+	/* 供应商列表 */
+	const loadingSelect = ref(false)
+	const supplyLIst = ref([])
+	const remoteMethod = async(query)=>{
+		loadingSelect.value = true
+		let res = await getSupplyListApi({
+			supplyName:query
+		})
+		// console.log(res,123852);
+		supplyLIst.value = res
+		loadingSelect.value = false
+	}
 	/* 查询按钮 */
 	const onSubmit = () => {
+		sessionStorage.setItem('formInline',JSON.stringify(formInline.value))
 		onGetTableData()
 	}
 	/* 重置按钮 */
 	const onReset = () => {
+		sessionStorage.removeItem("formInline")
 		// 数据初始化
 		const newData = onResetValue()
-		formInline.value = newData.formInline
+		formInline.value = {
+			supplyCode: '',
+			supplyName: '',
+			/* 时间默认是今天 00:00:00 到 今天 23:59:59 */
+			supplyCodeList:[],
+			date: [],
+		}
 		page.value = newData.page
 		page2.value = newData.page
 		/* 获取今天  */
@@ -216,7 +231,13 @@
 		/* /order */
 		/* 路由跳转 */
 		router.push({
-			path:`/order/${row.supply_code}`
+			path:`/order/${row.supply_code}`,
+			query:{
+				supplyCode:row.supply_code,
+				supplyName:row.supply_name,
+				startDate:formInline.value.date[0],
+				endDate:formInline.value.date[1],
+			}
 		})
 	}
 
@@ -224,7 +245,13 @@
 	const handleClickProduction = (row)=>{
 		/* /production */
 		router.push({
-			path:`/production/${row.supply_code}`
+			path:`/production/${row.supply_code}`,
+			query:{
+				supplyCode:row.supply_code,
+				supplyName:row.supply_name,
+				startDate:formInline.value.date[0],
+				endDate:formInline.value.date[1],
+			}
 		})
 	}
 
@@ -232,7 +259,13 @@
 	const handleClickDelivery = (row)=>{
 		/* /delivery */
 		router.push({
-			path:`/delivery/${row.supply_code}`
+			path:`/delivery/${row.supply_code}`,
+			query:{
+				supplyCode:row.supply_code,
+				supplyName:row.supply_name,
+				startDate:formInline.value.date[0],
+				endDate:formInline.value.date[1],
+			}
 		})
 	}
 
@@ -319,6 +352,7 @@
 			endDate:formInline.value.date[1],
 			supplyCode:formInline.value.supplyCode,
 			supplyName:formInline.value.supplyName,
+			supplyCodeList:formInline.value.supplyCodeList,
 			current:page.value.currentPage,
 			pageSize:page.value.pageSize
 		}
@@ -330,6 +364,7 @@
 			endDate:formInline.value.date[1],
 			supplyCode:formInline.value.supplyCode,
 			supplyName:formInline.value.supplyName,
+			supplyCodeList:formInline.value.supplyCodeList,
 			current:page2.value.currentPage,
 			pageSize:page2.value.pageSize
 		}
@@ -339,6 +374,10 @@
 		/* 获取今天  */
 		const time = todayA()
 		formInline.value.date = time
+		let sessionValue = JSON.parse(sessionStorage.getItem('formInline'))
+		if(sessionValue){
+			formInline.value = sessionValue
+		}
 		// 获取表格数据
 		onGetTableData()
 	})
@@ -349,6 +388,7 @@
 		name:'Home'
 	}
 </script>
+
 <style scoped>
 	.demo-form-inline .el-input {
 		--el-input-width: 220px;
