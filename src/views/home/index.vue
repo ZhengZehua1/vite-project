@@ -37,6 +37,7 @@
       	<el-form-item>
 			<el-button type="primary" @click="onSubmit">查询</el-button>
 			<el-button type="primary" @click="onReset">重置</el-button>
+			<el-button type="primary" @click="onExport">导出</el-button>
       	</el-form-item>
     </el-form>
 
@@ -167,9 +168,9 @@
 	import { onMounted, ref } from 'vue'
 	import {HomeFilled} from "@element-plus/icons-vue"
 	/* 引入API */
-	import { getTableApi,getTableApiB,getSupplyListApi} from '@/api/home'
+	import { getTableApi,getTableApiB,getSupplyListApi,exportExcelTableApi} from '@/api/home'
 	/* 引入公共方法 */
-	import { onResetValue,todayA } from '@/utils/common'
+	import { onResetValue,todayA,exportExcel } from '@/utils/common'
 	import { ElMessage } from 'element-plus';
 	/* 引入路由 */
 	import { useRouter } from 'vue-router'
@@ -381,6 +382,24 @@
 		// 获取表格数据
 		onGetTableData()
 	})
+	/* 导出 */
+	const onExport = async()=>{
+		let bodyValue ={
+			startDate:formInline.value.date[0],
+			endDate:formInline.value.date[1],
+			supplyCode:formInline.value.supplyCode,
+			supplyName:formInline.value.supplyName,
+			supplyCodeList:formInline.value.supplyCodeList,
+		}
+		try {
+			let res = await exportExcelTableApi(bodyValue)
+			/* 导出Excel表 */
+			exportExcel(res)
+		} catch (error) {
+			/* 提示 */
+			ElMessage.error('导出出错了，请稍后重试')
+		}
+	}
 </script>
   
 <script>

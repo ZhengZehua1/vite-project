@@ -24,6 +24,7 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   response => {
     if (response.data instanceof Blob) {
+      console.log(132465,'aaaa')
       return response.data
     }
     // if (!response.data.success) {
@@ -32,6 +33,7 @@ request.interceptors.response.use(
     // } else {
     //   return response.data
     // }
+    console.log(response)
     return response.data
   },
   error => {
