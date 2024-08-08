@@ -37,7 +37,8 @@
       	<el-form-item>
 			<el-button type="primary" @click="onSubmit">查询</el-button>
 			<el-button type="primary" @click="onReset">重置</el-button>
-			<el-button type="primary" @click="onExport">导出</el-button>
+			<el-button type="primary" @click="onExport" v-loading="loadingExport" :disabled="tableData.length == 0">导出</el-button>
+			<!-- <el-button type="primary" @click="onExport2">导出2</el-button> -->
       	</el-form-item>
     </el-form>
 
@@ -45,7 +46,7 @@
 	<p style='color: #666; font-size: 12px;'>默认只加载当天数据</p>
     <el-table max-height="600px" v-loading="loadingValue" selection :data="tableData" style="width: 100%;margin-bottom: 10px;" border >
         <el-table-column  label="汇总" fixed>
-			<el-table-column type="selection" width="40" />
+			<!-- <el-table-column type="selection" width="40" /> -->
             <el-table-column type="index" label="序号" min-width="60">
 				<template #default="scope">
 					{{ scope.$index + 1 + ((page.currentPage -1) * page.pageSize) }}
@@ -66,7 +67,7 @@
 			<!-- 可点击单元格 -->
             <el-table-column prop="unsyncCount" label="已确认订单行量，未同步行数" min-width="150">
 				<template #default="scope">
-					<el-link type="primary" @click="handleClickOrder(scope.row)">{{ scope.row.unsyncCount }}</el-link>
+					<el-link target="_blank" type="primary" @click="handleClickOrder(scope.row)">{{ scope.row.unsyncCount }}</el-link>
 				</template>
             </el-table-column>
             <el-table-column label="同步率" min-width="85">
@@ -83,7 +84,7 @@
 			<!-- 可点击单元格 -->
             <el-table-column prop="shedulingCount" label="已确认订单行量，未排产行数（无入库数量）" min-width="170">
 				<template #default="scope">
-					<el-link type="primary" @click="handleClickProduction(scope.row)">{{ scope.row.shedulingCount }}</el-link>
+					<el-link target="_blank" type="primary" @click="handleClickProduction(scope.row)">{{ scope.row.shedulingCount }}</el-link>
 				</template>
             </el-table-column>
             <el-table-column label="排产率" min-width="85">
@@ -115,10 +116,11 @@
 		@size-change="handleSizeChange"
 		@current-change="handleSizeChange"
     />
+	<el-button type="primary" @click="onExport2" v-loading="loadingExport2" :disabled="tableData2.length == 0">导出</el-button>
 	<p style='color: #666; font-size: 12px;'>默认只加载当天数据</p>
 	<el-table max-height="600px" v-loading="loadingValue2" selection :data="tableData2" style="width: 100%;margin-bottom: 10px;" border>
 		<el-table-column  label="汇总" fixed>
-			<el-table-column type="selection" width="40" />
+			<!-- <el-table-column type="selection" width="40" /> -->
             <el-table-column type="index" label="序号" min-width="60">
 				<template #default="scope">
 					{{ scope.$index + 1 + ((page.currentPage -1) * page.pageSize) }}
@@ -168,7 +170,7 @@
 	import { onMounted, ref } from 'vue'
 	import {HomeFilled} from "@element-plus/icons-vue"
 	/* 引入API */
-	import { getTableApi,getTableApiB,getSupplyListApi,exportExcelTableApi} from '@/api/home'
+	import { getTableApi,getTableApiB,getSupplyListApi,exportExcelTableApi,exportExcelTableBApi} from '@/api/home'
 	/* 引入公共方法 */
 	import { onResetValue,todayA,exportExcel } from '@/utils/common'
 	import { ElMessage } from 'element-plus';
@@ -231,43 +233,58 @@
 	const handleClickOrder = (row)=>{
 		/* /order */
 		/* 路由跳转 */
-		router.push({
-			path:`/order/${row.supply_code}`,
-			query:{
-				supplyCode:row.supply_code,
-				supplyName:row.supply_name,
-				startDate:formInline.value.date[0],
-				endDate:formInline.value.date[1],
-			}
-		})
+		// router.push({
+		// 	path:`/order/${row.supply_code}`,
+		// 	query:{
+		// 		supplyCode:row.supply_code,
+		// 		supplyName:row.supply_name,
+		// 		startDate:formInline.value.date[0],
+		// 		endDate:formInline.value.date[1],
+		// 	}
+		// })
+		const link = `/#/order/${row.supply_code}?supplyCode=${row.supply_code}&supplyName=${row.supply_name}&startDate=${formInline.value.date[0]}&endDate=${formInline.value.date[1]}`
+		/* 新的页面跳转 */
+		// console.log(link);
+		const newTab = window.open('', '_blank');
+      	newTab.location.href = link;
 	}
 
 	//单元格点击事件 生产	
 	const handleClickProduction = (row)=>{
 		/* /production */
-		router.push({
-			path:`/production/${row.supply_code}`,
-			query:{
-				supplyCode:row.supply_code,
-				supplyName:row.supply_name,
-				startDate:formInline.value.date[0],
-				endDate:formInline.value.date[1],
-			}
-		})
+		// router.push({
+		// 	path:`/production/${row.supply_code}`,
+		// 	query:{
+		// 		supplyCode:row.supply_code,
+		// 		supplyName:row.supply_name,
+		// 		startDate:formInline.value.date[0],
+		// 		endDate:formInline.value.date[1],
+		// 	}
+		// })
+		const link = `/#/production/${row.supply_code}?supplyCode=${row.supply_code}&supplyName=${row.supply_name}&startDate=${formInline.value.date[0]}&endDate=${formInline.value.date[1]}`
+		/* 新的页面跳转 */
+		// console.log(link);
+		const newTab = window.open('', '_blank');
+      	newTab.location.href = link;
 	}
 
 	//单元格点击事件 送货	
 	const handleClickDelivery = (row)=>{
 		/* /delivery */
-		router.push({
-			path:`/delivery/${row.supply_code}`,
-			query:{
-				supplyCode:row.supply_code,
-				supplyName:row.supply_name,
-				startDate:formInline.value.date[0],
-				endDate:formInline.value.date[1],
-			}
-		})
+		// router.push({
+		// 	path:`/delivery/${row.supply_code}`,
+		// 	query:{
+		// 		supplyCode:row.supply_code,
+		// 		supplyName:row.supply_name,
+		// 		startDate:formInline.value.date[0],
+		// 		endDate:formInline.value.date[1],
+		// 	}
+		// })
+		const link = `/#/delivery/${row.supply_code}?supplyCode=${row.supply_code}&supplyName=${row.supply_name}&startDate=${formInline.value.date[0]}&endDate=${formInline.value.date[1]}`
+		/* 新的页面跳转 */
+		// console.log(link);
+		const newTab = window.open('', '_blank');
+      	newTab.location.href = link;
 	}
 
 	/* 分页数据 */ /* -------------------------------- */
@@ -383,6 +400,8 @@
 		onGetTableData()
 	})
 	/* 导出 */
+	const loadingExport = ref(false)
+	const loadingExport2 = ref(false)
 	const onExport = async()=>{
 		let bodyValue ={
 			startDate:formInline.value.date[0],
@@ -392,12 +411,36 @@
 			supplyCodeList:formInline.value.supplyCodeList,
 		}
 		try {
+			loadingExport.value = true
 			let res = await exportExcelTableApi(bodyValue)
 			/* 导出Excel表 */
 			exportExcel(res)
+			loadingExport.value = false
 		} catch (error) {
 			/* 提示 */
 			ElMessage.error('导出出错了，请稍后重试')
+			loadingExport.value = false
+		}
+	}
+	/* 导出2 */
+	const onExport2 = async()=>{
+		let bodyValue ={
+			startDate:formInline.value.date[0],
+			endDate:formInline.value.date[1],
+			supplyCode:formInline.value.supplyCode,
+			supplyName:formInline.value.supplyName,
+			supplyCodeList:formInline.value.supplyCodeList,
+		}
+		try {
+			loadingExport2.value = true
+			let res = await exportExcelTableBApi(bodyValue)
+			/* 导出Excel表 */
+			exportExcel(res)
+			loadingExport2.value = false
+		} catch (error) {
+			/* 提示 */
+			ElMessage.error('导出出错了，请稍后重试')
+			loadingExport2.value = false
 		}
 	}
 </script>
@@ -421,19 +464,19 @@
 	::v-deep .el-table_1_column_1.el-table__cell{
 		background-color: #ffff00 !important;
 	}
-	::v-deep .el-table_1_column_6.el-table__cell{
+	::v-deep .el-table_1_column_5.el-table__cell{
 		background-color: #deeaf6 !important;
 	}
-	::v-deep .el-table_1_column_10.el-table__cell{
+	::v-deep .el-table_1_column_9.el-table__cell{
 		background-color: #ffff00 !important;
 	}
-	::v-deep .el-table_1_column_14.el-table__cell{
+	::v-deep .el-table_1_column_13.el-table__cell{
 		background-color: #dbdbdb !important;
 	}
-	::v-deep .el-table_2_column_16.el-table__cell{
+	::v-deep .el-table_2_column_15.el-table__cell{
 		background-color: #ffff00 !important;
 	}
-	::v-deep .el-table_2_column_21.el-table__cell{
+	::v-deep .el-table_2_column_19.el-table__cell{
 		background-color: #e3efd9 !important;
 	}
 

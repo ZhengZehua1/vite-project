@@ -44,14 +44,16 @@ export const todayA = ()=>{
 /* 导出Excel */
 export const exportExcel = (res)=>{
     /* 下载 */
-		const blob = new Blob([res]);
+		const blob = new Blob([res.data]);
 		const url = window.URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.style.display = 'none';
 		a.href = url;
 		/* 后端获取文件名 */
-		// a.download = res.headers['content-disposition'].split('filename=')[1];
-		a.download = 'abc.xlsx'; // 设置文件名，可以从后端获取文件名或固定命名
+        const encodedStr = (res.headers['content-disposition'].split('filename=')[1]).split(".")[0];
+        const decodedStr = decodeURIComponent(encodedStr);
+		a.download = decodedStr + "." + (res.headers['content-disposition'].split('filename=')[1]).split(".")[1]; // 设置文件名，可以从后端获取文件名或固定命名
+		// a.download = 'abc.xlsx'; // 设置文件名，可以从后端获取文件名或固定命名
 		document.body.appendChild(a);
 		a.click();
 		// 清理

@@ -58,10 +58,21 @@ export const getProductionTable = (data)=>{
 }
 
 
-/* 导出 */
+/* 导出 1 */
 export const exportExcelTableApi = (data)=>{
     return request({
         url: '/reportControlle/exportExcel',
+        method: 'POST',
+        /* 文件 */
+        responseType: 'blob',
+        /* 查询参数 */
+        data: data
+    })
+}
+/* 导出 2 */
+export const exportExcelTableBApi = (data)=>{
+    return request({
+        url: '/reportControlle/exportDeliveryExcel',
         method: 'POST',
         /* 文件 */
         responseType: 'blob',

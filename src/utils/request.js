@@ -24,8 +24,8 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   response => {
     if (response.data instanceof Blob) {
-      console.log(132465,'aaaa')
-      return response.data
+      console.log(132465,'aaaa',response)
+      return response
     }
     // if (!response.data.success) {
     //   Message.error(response.data.message)
