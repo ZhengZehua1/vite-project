@@ -80,3 +80,22 @@ export const exportExcelTableBApi = (data)=>{
         data: data
     })
 }
+
+/* /exportUnSysExcel
+未同步订单导出 */
+export const exportUnSysExcelTableApi = (url,data)=>{
+    return request({
+        url: `/reportControlle${url}`,
+        method: 'POST',
+        /* 文件 */
+        responseType: 'blob',
+        /* 查询参数 */
+        data: data
+    })
+}
+
+/* /exportUnSheuing
+未排产订单导出 */
+
+/* /exportUnDelivery
+发货未确认订单导出 */

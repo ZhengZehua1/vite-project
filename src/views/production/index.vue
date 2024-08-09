@@ -1,7 +1,10 @@
 <!-- 生产 -->
 <template>
-<div style="background-color: #e3efd9;padding: 10px;">
+<!-- <div style="background-color: #e3efd9;padding: 10px;">
 	<el-page-header @back="router.go(-1)" title="返回" content="未同步生产表"></el-page-header>
+</div> -->
+<div style="background-color: #e3efd9;padding: 10px 15px;font-size: 18px;">
+	未同步生产表
 </div>
 <div style="padding: 20px">
     <!-- 表单 -->
@@ -33,6 +36,8 @@
       	<el-form-item>
 			<el-button type="primary" @click="onSubmit">查询</el-button>
 			<el-button type="primary" @click="onReset">重置</el-button>
+			<el-button type="primary" @click="onExport" v-loading="loadingExport" :disabled="tableData.length == 0">导出</el-button>
+
       	</el-form-item>
     </el-form>
 
@@ -56,9 +61,9 @@
            
         </el-table-column>
 
-        <el-table-column  label="生产订单号" prop="production_no">
+        <!-- <el-table-column  label="生产订单号" prop="production_no">
            
-        </el-table-column>
+        </el-table-column> -->
     </el-table>
 
     <!-- 分页 -->
@@ -79,9 +84,9 @@
 <script setup>
 	import { ref ,onMounted} from 'vue'
 	/* 引入API */
-	import {getProductionTable} from '@/api/home'
+	import {getProductionTable,exportUnSysExcelTableApi} from '@/api/home'
 	/* 引入公共方法 */
-	import { onResetValue } from '@/utils/common'
+	import { onResetValue,exportExcel } from '@/utils/common'
 	import { ElMessage } from 'element-plus';
 	/* 获取路由参数 */
 	import { useRoute ,useRouter} from 'vue-router';
@@ -165,6 +170,25 @@
 		formInline.value.date = [objRow.startDate,objRow.endDate]
 		onOrderTable()
 	})
+	/* 数据导出 */
+	const loadingExport = ref(false)
+	const onExport = async()=>{
+		loadingExport.value = true
+		try {
+			let res = await exportUnSysExcelTableApi('/exportUnSheuing',{
+			supplyCode:objRow.supplyCode,
+			startDate:formInline.value.date[0],
+			endDate:formInline.value.date[1],
+				supplyName:objRow.supplyName,
+			})
+			loadingExport.value = false
+			exportExcel(res)
+		} catch (error) {
+			/* 提示 */
+			ElMessage.error('出错了，请稍后再试！')
+			loadingExport.value = false
+		}
+	}
 </script>
   
 <script>
