@@ -95,7 +95,7 @@
         </el-table-column>
 
         <el-table-column  label="库存协同">
-            <el-table-column prop="syncCount" label="已同步库存行数" min-width="90">
+            <el-table-column prop="houserCount" label="已同步库存行数" min-width="90">
 
             </el-table-column>
         </el-table-column>
